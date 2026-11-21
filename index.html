@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pinhole Automation | AI automation for family law firms</title>
+<meta name="description" content="Pinhole Automation designs and installs AI workflows for family law practices: intake, financial disclosures, support calculations, deadlines and client updates, with an attorney reviewing every output that matters.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0B347D;
+    --deep-navy: #07295F;
+    --silver: #BCC6D5;
+    --slate: #7E8796;
+    --white: #FFFFFF;
+    --mist: #F2F4F8;          /* light tint of Silver Gray, for alternating sections */
+    --ink: #07295F;
+    --body: #3A4558;          /* Deep Navy mixed toward Slate, for long-form text */
+    --rule: #DCE2EB;
+
+    --step--1: 0.875rem;
+    --step-0: 1.0625rem;
+    --step-1: 1.25rem;
+    --step-2: 1.625rem;
+    --step-3: clamp(1.875rem, 3.2vw, 2.5rem);
+    --step-4: clamp(2.375rem, 5.4vw, 4.25rem);
+
+    --gutter: clamp(1rem, 4vw, 2.5rem);
+    --max: 72rem;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    margin: 0;
+    font-family: "Montserrat", "Avenir Next", Avenir, system-ui, sans-serif;
+    font-size: var(--step-0);
+    line-height: 1.6;
+    color: var(--body);
+    background: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 { color: var(--ink); margin: 0; line-height: 1.12; letter-spacing: -0.02em; }
+  h1 { font-size: var(--step-4); font-weight: 800; letter-spacing: -0.03em; }
+  h2 { font-size: var(--step-3); font-weight: 700; }
+  h3 { font-size: var(--step-1); font-weight: 700; letter-spacing: -0.01em; line-height: 1.3; }
+  p { margin: 0; }
+  a { color: var(--navy); }
+
+  :focus-visible { outline: 3px solid var(--navy); outline-offset: 3px; border-radius: 2px; }
+  .on-dark :focus-visible { outline-color: var(--white); }
+
+  .wrap { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+  .measure { max-width: 38rem; }
+
+  .skip { position: absolute; left: -9999px; top: 0; }
+  .skip:focus { left: 1rem; top: 1rem; z-index: 10; background: var(--white); padding: .5rem 1rem; }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    font: inherit;
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    padding: .9rem 1.5rem;
+    border-radius: 999px;
+    border: 2px solid var(--navy);
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+  }
+  .btn-primary { background: var(--navy); color: var(--white); }
+  .btn-primary:hover { background: var(--deep-navy); border-color: var(--deep-navy); }
+  .btn-quiet { color: var(--navy); background: transparent; }
+  .btn-quiet:hover { background: var(--mist); }
+  .on-dark .btn-primary { background: var(--white); color: var(--deep-navy); border-color: var(--white); }
+  .on-dark .btn-primary:hover { background: var(--silver); border-color: var(--silver); }
+
+  /* Header */
+  .site-header { border-bottom: 1px solid var(--rule); background: var(--white); position: sticky; top: 0; z-index: 5; }
+  .site-header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; height: 4.5rem; }
+  .brand { display: flex; align-items: center; gap: .65rem; text-decoration: none; }
+  .brand svg { width: 2.4rem; height: 2.4rem; flex: none; }
+  .wordmark { display: flex; flex-direction: column; line-height: 1; }
+  .wordmark b { font-weight: 800; font-size: 1.35rem; letter-spacing: -0.03em; color: var(--navy); }
+  .wordmark b span { color: var(--slate); }
+  .wordmark small { font-weight: 500; font-size: .62rem; letter-spacing: .32em; color: var(--deep-navy); margin-top: .2rem; }
+  .nav { display: flex; align-items: center; gap: 1.75rem; }
+  .nav a:not(.btn) { color: var(--ink); text-decoration: none; font-weight: 500; font-size: .95rem; }
+  .nav a:not(.btn):hover { color: var(--navy); text-decoration: underline; text-underline-offset: 4px; }
+  .nav .btn { padding: .6rem 1.15rem; font-size: .92rem; }
+  @media (max-width: 52rem) { .nav a:not(.btn) { display: none; } }
+  @media (max-width: 30rem) { .nav .long { display: none; } }
+  @media (max-width: 26rem) { .nav .btn { padding: .55rem .9rem; font-size: .85rem; } .wordmark small { display: none; } }
+
+  /* Hero */
+  .hero { padding: clamp(3rem, 8vw, 6.5rem) 0 clamp(3.5rem, 8vw, 6rem); overflow: hidden; }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(2rem, 5vw, 4.5rem); align-items: center; }
+  .hero h1 { max-width: 15ch; }
+  .hero-lede { font-size: var(--step-1); line-height: 1.55; margin-top: 1.5rem; max-width: 34rem; }
+  .hero-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2.25rem; }
+  .hero-note { margin-top: 1.25rem; font-size: var(--step--1); color: var(--slate); }
+  .aperture-stage { position: relative; justify-self: end; width: min(100%, 30rem); aspect-ratio: 1; }
+  .aperture-stage svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  @media (max-width: 52rem) {
+    .hero .wrap { grid-template-columns: 1fr; }
+    .aperture-stage { order: -1; justify-self: start; width: min(46vw, 13rem); }
+  }
+
+  /* Section rhythm */
+  .band { padding: clamp(4rem, 9vw, 7rem) 0; }
+  .band-mist { background: var(--mist); }
+  .band-navy { background: var(--deep-navy); color: var(--silver); }
+  .band-navy h2, .band-navy h3 { color: var(--white); }
+  .section-head { display: grid; gap: 1rem; margin-bottom: clamp(2.5rem, 5vw, 3.5rem); }
+  .section-head p { font-size: var(--step-1); line-height: 1.55; max-width: 40rem; }
+
+  /* Ledger: task / automation / attorney */
+  .ledger { width: 100%; border-collapse: collapse; }
+  .ledger th { text-align: left; font-size: var(--step--1); font-weight: 600; color: var(--slate); padding: 0 1.5rem 1rem 0; border-bottom: 2px solid var(--navy); }
+  .ledger td { vertical-align: top; padding: 1.6rem 1.5rem 1.6rem 0; border-bottom: 1px solid var(--rule); }
+  .ledger th:last-child, .ledger td:last-child { padding-right: 0; }
+  .ledger td:first-child { width: 22%; }
+  .ledger td:nth-child(2) { width: 46%; }
+  .ledger td:first-child h3 { font-size: var(--step-1); }
+  .ledger td:last-child { color: var(--deep-navy); font-weight: 500; }
+  .ledger td:last-child::before {
+    content: ""; display: inline-block; width: .6rem; height: .6rem; border-radius: 50%;
+    background: var(--navy); margin-right: .55rem; vertical-align: .08em;
+  }
+  .cell-label { display: none; }
+  @media (max-width: 46rem) {
+    .ledger thead { position: absolute; left: -9999px; }
+    .ledger, .ledger tbody, .ledger tr, .ledger td { display: block; width: 100% !important; }
+    .ledger tr { padding: 1.5rem 0; border-bottom: 1px solid var(--rule); }
+    .ledger td { border: 0; padding: 0; }
+    .ledger td + td { margin-top: .85rem; }
+    .cell-label { display: block; font-size: var(--step--1); font-weight: 600; color: var(--slate); margin-bottom: .2rem; }
+    .ledger td:last-child::before { display: none; }
+  }
+
+  /* Process: a real sequence, so it is numbered */
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2rem; counter-reset: step; }
+  .steps li { counter-increment: step; border-top: 2px solid var(--silver); padding-top: 1.25rem; position: relative; }
+  .steps li::before {
+    content: counter(step);
+    display: grid; place-items: center;
+    width: 2.25rem; height: 2.25rem; border-radius: 50%;
+    background: var(--navy); color: var(--white); font-weight: 700; font-size: .95rem;
+    position: absolute; top: -1.15rem; left: 0;
+  }
+  .steps h3 { margin-top: 1.4rem; }
+  .steps p { margin-top: .6rem; font-size: 1rem; }
+  .steps .when { display: block; margin-top: .9rem; font-size: var(--step--1); font-weight: 600; color: var(--slate); }
+  @media (max-width: 60rem) { .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 3rem; } }
+  @media (max-width: 34rem) { .steps { grid-template-columns: 1fr; } }
+
+  /* Safeguards */
+  .safeguards { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+  .safeguards .section-head { margin-bottom: 0; }
+  .safeguards .section-head p { color: var(--silver); }
+  .guard-list { margin: 0; padding: 0; list-style: none; }
+  .guard-list li { padding: 1.5rem 0; border-top: 1px solid rgba(188, 198, 213, .28); }
+  .guard-list li:last-child { border-bottom: 1px solid rgba(188, 198, 213, .28); }
+  .guard-list p { margin-top: .5rem; font-size: 1rem; }
+  .band-navy a { color: var(--white); }
+  @media (max-width: 52rem) { .safeguards { grid-template-columns: 1fr; } }
+
+  /* FAQ */
+  .faq { max-width: 48rem; }
+  .faq details { border-bottom: 1px solid var(--rule); }
+  .faq details:first-of-type { border-top: 1px solid var(--rule); }
+  .faq summary {
+    cursor: pointer; list-style: none; padding: 1.4rem 2.5rem 1.4rem 0; position: relative;
+    font-weight: 700; color: var(--ink); font-size: var(--step-1); line-height: 1.35;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: ""; position: absolute; right: .35rem; top: 50%; width: .7rem; height: .7rem;
+    border-right: 2.5px solid var(--navy); border-bottom: 2.5px solid var(--navy);
+    transform: translateY(-70%) rotate(45deg); transition: transform .2s ease;
+  }
+  .faq details[open] summary::after { transform: translateY(-25%) rotate(-135deg); }
+  .faq details p { padding: 0 0 1.5rem; max-width: 40rem; }
+  @media (prefers-reduced-motion: reduce) { .faq summary::after { transition: none; } }
+
+  /* Closing CTA */
+  .cta { background: var(--navy); color: var(--silver); padding: clamp(4rem, 9vw, 6.5rem) 0; }
+  .cta .wrap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2.5rem; align-items: end; }
+  .cta h2 { color: var(--white); max-width: 18ch; }
+  .cta p { margin-top: 1.1rem; font-size: var(--step-1); line-height: 1.55; max-width: 36rem; }
+  @media (max-width: 46rem) { .cta .wrap { grid-template-columns: 1fr; align-items: start; } }
+
+  /* Footer */
+  .site-footer { background: var(--deep-navy); color: var(--silver); padding: 3rem 0; font-size: var(--step--1); }
+  .site-footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 2rem; align-items: flex-start; }
+  .site-footer .wordmark b, .site-footer .wordmark b span, .site-footer .wordmark small { color: var(--white); }
+  .site-footer p { max-width: 34rem; }
+  .site-footer p + p { margin-top: .6rem; }
+  .site-footer a { color: var(--white); }
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="Pinhole Automation home">
+      <svg viewBox="-104 -104 208 208" aria-hidden="true" data-aperture data-gap="#FFFFFF"></svg>
+      <span class="wordmark"><b>Pin<span>hole</span></b><small>Automation</small></span>
+    </a>
+    <nav class="nav" aria-label="Main">
+      <a href="#automate">What we automate</a>
+      <a href="#process">How it works</a>
+      <a href="#safeguards">Safeguards</a>
+      <a href="#faq">Questions</a>
+      <a class="btn btn-primary" href="#contact">Book a <span class="long">workflow </span>review</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <h1>Less paperwork between you and the families you represent.</h1>
+        <p class="hero-lede">Pinhole Automation designs and installs AI workflows for family law practices, from the first intake call to the final decree. Your team gets hours back each week, and an attorney still reviews every output that matters.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#contact">Book a workflow review</a>
+          <a class="btn btn-quiet" href="#automate">See what we automate</a>
+        </div>
+        <p class="hero-note">Free 45-minute call. You keep the findings whether or not we work together.</p>
+      </div>
+      <div class="aperture-stage">
+        <svg viewBox="-104 -104 208 208" role="img" aria-label="Pinhole Automation aperture mark" data-aperture data-gap="#FFFFFF" data-animate></svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="band band-mist" id="automate" aria-labelledby="automate-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="automate-title">Where your hours go, and what we take off the desk</h2>
+        <p>Family law runs on forms, documents and deadlines. We automate the repetitive parts of each matter and leave judgment, strategy and client care with your team.</p>
+      </div>
+      <table class="ledger">
+        <thead>
+          <tr><th scope="col">The task</th><th scope="col">What automation handles</th><th scope="col">What stays with your team</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><h3>New client intake</h3></td>
+            <td><span class="cell-label">What automation handles</span>An online intake that collects party, children and asset details, runs conflict checks against your client list, and drafts the engagement letter.</td>
+            <td><span class="cell-label">What stays with your team</span>Deciding whether to take the matter.</td>
+          </tr>
+          <tr>
+            <td><h3>Financial disclosures</h3></td>
+            <td><span class="cell-label">What automation handles</span>Document requests and reminders to clients, then sorting pay stubs, tax returns and bank statements into a draft financial affidavit.</td>
+            <td><span class="cell-label">What stays with your team</span>Checking the figures and signing off.</td>
+          </tr>
+          <tr>
+            <td><h3>Support calculations</h3></td>
+            <td><span class="cell-label">What automation handles</span>Child and spousal support worksheets pre-filled from disclosed income, using your state's guidelines.</td>
+            <td><span class="cell-label">What stays with your team</span>Testing assumptions and arguing deviations.</td>
+          </tr>
+          <tr>
+            <td><h3>Deadlines and calendaring</h3></td>
+            <td><span class="cell-label">What automation handles</span>Hearing dates, discovery deadlines and parenting-plan milestones read from filings and added to your firm calendar.</td>
+            <td><span class="cell-label">What stays with your team</span>Confirming dates before anything is final.</td>
+          </tr>
+          <tr>
+            <td><h3>Client updates</h3></td>
+            <td><span class="cell-label">What automation handles</span>Plain-language status updates and answers to routine questions, so fewer calls start with "any news?"</td>
+            <td><span class="cell-label">What stays with your team</span>Anything emotional, sensitive or strategic.</td>
+          </tr>
+          <tr>
+            <td><h3>First drafts</h3></td>
+            <td><span class="cell-label">What automation handles</span>Petitions, discovery requests and parenting plans drafted from your own templates and the facts already in the file.</td>
+            <td><span class="cell-label">What stays with your team</span>Editing, approving and filing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="band" id="process" aria-labelledby="process-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="process-title">How an engagement works</h2>
+        <p>We start with one workflow, prove it on real work, then add the next. You won't need to replace your case management software.</p>
+      </div>
+      <ol class="steps">
+        <li>
+          <h3>Workflow review</h3>
+          <p>A call with you and your staff to map where time goes on a typical matter, from intake to decree.</p>
+          <span class="when">45 minutes, free</span>
+        </li>
+        <li>
+          <h3>Blueprint</h3>
+          <p>A written plan that ranks what's worth automating, fits the tools you already use, and gives a fixed price for each piece.</p>
+          <span class="when">Within one week</span>
+        </li>
+        <li>
+          <h3>Build and test</h3>
+          <p>We build the first workflow and test it on sample matters. Live client data goes in only after you approve the results.</p>
+          <span class="when">A few weeks per workflow</span>
+        </li>
+        <li>
+          <h3>Train and support</h3>
+          <p>Hands-on training for attorneys and staff, then monthly check-ins to tune what's working and fix what isn't.</p>
+          <span class="when">Ongoing</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="band band-navy on-dark" id="safeguards" aria-labelledby="safeguards-title">
+    <div class="wrap safeguards">
+      <div class="section-head">
+        <h2 id="safeguards-title">Built for privileged and sensitive information</h2>
+        <p>Family law files hold children's details, finances and allegations of abuse. Every system we build is designed around confidentiality first.</p>
+      </div>
+      <ul class="guard-list">
+        <li>
+          <h3>An attorney in the loop</h3>
+          <p>Nothing goes to a client, opposing counsel or the court without review by someone at your firm. Automation drafts; your lawyers decide.</p>
+        </li>
+        <li>
+          <h3>Your data stays yours</h3>
+          <p>We set up AI tools so client information is not used to train models, and we work only with vendors that sign data protection agreements.</p>
+        </li>
+        <li>
+          <h3>Access controls and an audit trail</h3>
+          <p>Staff see only the matters they work on, and every automated step is logged so you can show what happened and when.</p>
+        </li>
+        <li>
+          <h3>Aligned with your ethical duties</h3>
+          <p>Our setup follows the duties of competence, confidentiality and supervision covered in <a href="https://www.americanbar.org/news/abanews/aba-news-archives/2024/07/aba-issues-first-ethics-guidance-ai-tools/" rel="noopener">ABA Formal Opinion 512</a> on generative AI, and we adapt it to your state bar's guidance.</p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="band" id="faq" aria-labelledby="faq-title">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 id="faq-title">Questions firms ask us</h2>
+      </div>
+      <div class="faq">
+        <details>
+          <summary>Do we need to change our case management software?</summary>
+          <p>No. We build around the practice management, document and calendar tools you already use. If a tool you rely on can't support a workflow safely, we'll tell you in the blueprint before you spend anything.</p>
+        </details>
+        <details>
+          <summary>Will the AI give legal advice to our clients?</summary>
+          <p>No. Client-facing automation sticks to status updates, document requests and routine logistics. Anything that touches advice, strategy or a sensitive situation goes to a person at your firm.</p>
+        </details>
+        <details>
+          <summary>What size firm is this for?</summary>
+          <p>Solo practitioners through mid-sized family law firms. Smaller firms usually start with intake and disclosures; larger firms often start with drafting and calendaring across several attorneys.</p>
+        </details>
+        <details>
+          <summary>How soon will we see a difference?</summary>
+          <p>We start with the one workflow that costs you the most time, so you'll see a difference as soon as that first workflow goes live, usually within weeks, not months.</p>
+        </details>
+        <details>
+          <summary>How is pricing structured?</summary>
+          <p>Each workflow in your blueprint has a fixed project price, so you know the cost before work begins. Ongoing support is a flat monthly fee you can cancel at any time.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta on-dark" id="contact" aria-labelledby="contact-title">
+    <div class="wrap">
+      <div>
+        <h2 id="contact-title">Find out where your firm's hours go</h2>
+        <p>Book a free 45-minute workflow review. You'll leave with a short list of what's worth automating first.</p>
+      </div>
+      <a class="btn btn-primary" href="mailto:hello@pinholeautomation.com?subject=Workflow%20review">Book a workflow review</a>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer on-dark">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="Pinhole Automation home">
+      <svg viewBox="-104 -104 208 208" aria-hidden="true" data-aperture data-gap="#07295F" data-reversed></svg>
+      <span class="wordmark"><b>Pin<span>hole</span></b><small>Automation</small></span>
+    </a>
+    <div>
+      <p>Pinhole Automation is a consulting firm, not a law firm, and does not provide legal advice.</p>
+      <p>&copy; <span id="year">2026</span> Pinhole Automation. <a href="mailto:hello@pinholeautomation.com">hello@pinholeautomation.com</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(() => {
+  const R = 100, CURVE = 0.14;
+  const COLORS = { navy: "#0B347D", silver: "#BCC6D5", white: "#FFFFFF" };
+
+  // Six blades around a hexagonal opening of radius h. Each blade is bounded by two
+  // extended hexagon edges (bowed into a curve) and an arc of the outer circle.
+  function blades(h) {
+    const V = [], E = [], C = [];
+    for (let i = 0; i < 6; i++) {
+      const a = (i * 60 - 90) * Math.PI / 180;
+      V.push([h * Math.cos(a), h * Math.sin(a)]);
+    }
+    for (let i = 0; i < 6; i++) {
+      const p = V[i], q = V[(i + 1) % 6];
+      let dx = q[0] - p[0], dy = q[1] - p[1];
+      const len = Math.hypot(dx, dy); dx /= len; dy /= len;
+      const b = p[0] * dx + p[1] * dy, c = p[0] * p[0] + p[1] * p[1] - R * R;
+      const t = -b + Math.sqrt(b * b - c);
+      const e = [p[0] + t * dx, p[1] + t * dy];
+      E.push(e);
+      const seg = Math.hypot(e[0] - q[0], e[1] - q[1]);
+      C.push([(q[0] + e[0]) / 2 - dy * CURVE * seg, (q[1] + e[1]) / 2 + dx * CURVE * seg]);
+    }
+    const f = (pt) => pt[0].toFixed(2) + " " + pt[1].toFixed(2);
+    const out = [];
+    for (let i = 0; i < 6; i++) {
+      const j = (i + 1) % 6;
+      out.push(`M${f(V[j])} Q${f(C[i])} ${f(E[i])} A${R} ${R} 0 0 1 ${f(E[j])} Q${f(C[j])} ${f(V[(i + 2) % 6])} Z`);
+    }
+    return out;
+  }
+
+  function build(svg) {
+    const reversed = svg.hasAttribute("data-reversed");
+    const gap = svg.getAttribute("data-gap") || "#FFFFFF";
+    const ns = "http://www.w3.org/2000/svg";
+    const g = document.createElementNS(ns, "g");
+    const paths = [];
+    for (let i = 0; i < 6; i++) {
+      const p = document.createElementNS(ns, "path");
+      p.setAttribute("fill", reversed ? (i % 2 ? COLORS.silver : COLORS.white) : (i % 2 ? COLORS.silver : COLORS.navy));
+      p.setAttribute("stroke", gap);
+      p.setAttribute("stroke-width", "5");
+      p.setAttribute("stroke-linejoin", "round");
+      g.appendChild(p); paths.push(p);
+    }
+    svg.appendChild(g);
+    return { g, paths };
+  }
+
+  function draw(parts, h, rot) {
+    blades(h).forEach((d, i) => parts.paths[i].setAttribute("d", d));
+    parts.g.setAttribute("transform", `rotate(${rot})`);
+  }
+
+  const OPEN = 34;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.querySelectorAll("svg[data-aperture]").forEach((svg) => {
+    const parts = build(svg);
+    if (!svg.hasAttribute("data-animate") || reduce) { draw(parts, OPEN, 0); return; }
+
+    // The one orchestrated moment: the aperture opens once, on load.
+    const START = 1.5, DUR = 1800, DELAY = 250;
+    draw(parts, START, -75);
+    const ease = (t) => 1 - Math.pow(1 - t, 4);
+    let t0 = null;
+    const step = (now) => {
+      if (t0 === null) t0 = now + DELAY;
+      const t = Math.min(Math.max((now - t0) / DUR, 0), 1);
+      const k = ease(t);
+      draw(parts, START + (OPEN - START) * k, -75 * (1 - k));
+      if (t < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  });
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>
